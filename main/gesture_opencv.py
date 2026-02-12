@@ -26,7 +26,7 @@ except ImportError:
 
 # ==================== 双舵机云台控制 ====================
 class ServoController:
-    def __init__(self, up_down_pin=9, left_right_pin=11):
+    def __init__(self, up_down_pin=11, left_right_pin=9):
         self.up_down_pin = up_down_pin
         self.left_right_pin = left_right_pin
         self.pwm_up_down = None
@@ -38,19 +38,19 @@ class ServoController:
                 GPIO.setmode(GPIO.BCM)
                 GPIO.setwarnings(False)
 
-                # 初始化上下舵机 (GPIO 9)
+                # 初始化上下舵机 (GPIO 11)
                 GPIO.setup(self.up_down_pin, GPIO.OUT)
                 self.pwm_up_down = GPIO.PWM(self.up_down_pin, 50)
                 self.pwm_up_down.start(0)
                 self._set_angle_single(self.pwm_up_down, 90)
 
-                # 初始化左右舵机 (GPIO 11)
+                # 初始化左右舵机 (GPIO 9)
                 GPIO.setup(self.left_right_pin, GPIO.OUT)
                 self.pwm_left_right = GPIO.PWM(self.left_right_pin, 50)
                 self.pwm_left_right.start(0)
                 self._set_angle_single(self.pwm_left_right, 90)
 
-                print("[OK] 双舵机云台就绪 (GPIO 9=上下, GPIO 11=左右)")
+                print("[OK] 双舵机云台就绪 (GPIO 11=上下, GPIO 9=左右)")
             except Exception as e:
                 print(f"[错误] 舵机: {e}")
 

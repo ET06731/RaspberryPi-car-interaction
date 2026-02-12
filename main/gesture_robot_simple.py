@@ -53,45 +53,44 @@ EXPRESSIONS = {
 
 # ==================== 双舵机云台控制 ====================
 class ServoController:
-    def __init__(self, up_down_pin=9, left_right_pin=11):  # GPIO 9=上下, GPIO 11=左右
+    def __init__(self, up_down_pin=11, left_right_pin=9):  # GPIO 11=上下, GPIO 9=左右
         self.up_down_pin = up_down_pin
         self.left_right_pin = left_right_pin
         self.current_up_down = 90
         self.current_left_right = 90
         self.pwm_up_down = None
         self.pwm_left_right = None
+        self._is_busy = False  # 添加忙标志，防止动作重叠
 
         if GPIO_AVAILABLE:
             try:
                 GPIO.setmode(GPIO.BCM)
                 GPIO.setwarnings(False)
 
-                # 初始化上下舵机 (GPIO 9)
+                # 初始化上下舵机 (GPIO 11)
                 GPIO.setup(self.up_down_pin, GPIO.OUT)
                 self.pwm_up_down = GPIO.PWM(self.up_down_pin, 50)
                 self.pwm_up_down.start(0)
                 self._set_angle_single(self.pwm_up_down, 90)
 
-                # 初始化左右舵机 (GPIO 11)
+                # 初始化左右舵机 (GPIO 9)
                 GPIO.setup(self.left_right_pin, GPIO.OUT)
                 self.pwm_left_right = GPIO.PWM(self.left_right_pin, 50)
                 self.pwm_left_right.start(0)
                 self._set_angle_single(self.pwm_left_right, 90)
 
-                print("[OK] 双舵机云台就绪 (GPIO 9=上下, GPIO 11=左右)")
+                print("[OK] 双舵机云台就绪 (GPIO 11=上下, GPIO 9=左右)")
             except Exception as e:
                 print(f"[错误] 舵机: {e}")
 
-    def _set_angle_single(self, pwm, angle):
-        """设置单个舵机角度"""
+    def _set_angle_single(self, pwm, angle, duration=0.5):
+        """设置单个舵机角度，持续发送信号保证流畅"""
         angle = max(0, min(180, angle))
         if pwm:
             duty = 2.5 + 10 * angle / 180.0
-            for i in range(18):
-                pwm.ChangeDutyCycle(duty)
-                time.sleep(0.02)
-                pwm.ChangeDutyCycle(0)
-                time.sleep(0.02)
+            pwm.ChangeDutyCycle(duty)
+            time.sleep(duration)  # 持续发送信号一段时间
+            pwm.ChangeDutyCycle(0)  # 然后停止，防止抖动
 
     def execute_action(self, action_name):
         def action():
@@ -99,40 +98,45 @@ class ServoController:
                 print(f"[舵机] GPIO 不可用")
                 return
 
+            # 如果正在执行动作，跳过
+            if self._is_busy:
+                return
+
+            self._is_busy = True
             print(f"[舵机] 执行动作: {action_name}")
 
             if action_name == "nod":  # 点头 - 上下舵机动 (70°-100°)
                 for _ in range(2):
-                    self._set_angle_single(self.pwm_up_down, 100)  # 抬头
-                    time.sleep(0.2)
-                    self._set_angle_single(self.pwm_up_down, 70)  # 低头
-                    time.sleep(0.2)
-                self._set_angle_single(self.pwm_up_down, 90)  # 回到原位
+                    self._set_angle_single(self.pwm_up_down, 100, duration=0.3)  # 抬头
+                    self._set_angle_single(self.pwm_up_down, 70, duration=0.3)  # 低头
+                self._set_angle_single(self.pwm_up_down, 90, duration=0.3)  # 回到原位
 
             elif action_name == "shake":  # 摇头 - 左右舵机动 (60°-120°)
                 for _ in range(3):
-                    self._set_angle_single(self.pwm_left_right, 60)  # 左转
-                    time.sleep(0.2)
-                    self._set_angle_single(self.pwm_left_right, 120)  # 右转
-                    time.sleep(0.2)
-                self._set_angle_single(self.pwm_left_right, 90)  # 回到原位
+                    self._set_angle_single(
+                        self.pwm_left_right, 60, duration=0.25
+                    )  # 左转
+                    self._set_angle_single(
+                        self.pwm_left_right, 120, duration=0.25
+                    )  # 右转
+                self._set_angle_single(
+                    self.pwm_left_right, 90, duration=0.3
+                )  # 回到原位
 
             elif action_name == "sway":  # 摇摆 - 左右舵机 (轻微摆动)
                 for _ in range(2):
-                    self._set_angle_single(self.pwm_left_right, 75)
-                    time.sleep(0.3)
-                    self._set_angle_single(self.pwm_left_right, 105)
-                    time.sleep(0.3)
-                self._set_angle_single(self.pwm_left_right, 90)  # 回到原位
+                    self._set_angle_single(self.pwm_left_right, 75, duration=0.4)
+                    self._set_angle_single(self.pwm_left_right, 105, duration=0.4)
+                self._set_angle_single(
+                    self.pwm_left_right, 90, duration=0.3
+                )  # 回到原位
 
             elif action_name == "scan":  # 扫描 - 左右舵机环顾
-                for a in range(0, 181, 10):
-                    self._set_angle_single(self.pwm_left_right, a)
-                    time.sleep(0.05)
+                for a in range(0, 161, 10):
+                    self._set_angle_single(self.pwm_left_right, a, duration=0.08)
                 for a in range(180, -1, -10):
-                    self._set_angle_single(self.pwm_left_right, a)
-                    time.sleep(0.05)
-                self._set_angle_single(self.pwm_left_right, 90)
+                    self._set_angle_single(self.pwm_left_right, a, duration=0.08)
+                self._set_angle_single(self.pwm_left_right, 90, duration=0.3)
 
             elif action_name == "look_left":  # 看左边
                 self._set_angle_single(self.pwm_left_right, 60)
@@ -152,6 +156,9 @@ class ServoController:
 
             elif action_name == "lock":  # 锁定
                 pass
+
+            time.sleep(2)  # 暂停2秒给舵机做反馈动作
+            self._is_busy = False  # 动作完成，释放标志
 
         threading.Thread(target=action, daemon=True).start()
 
