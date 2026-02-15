@@ -8,6 +8,7 @@
 import RPi.GPIO as GPIO
 import time
 import threading
+import atexit
 from typing import Optional
 
 # 小车电机引脚定义
@@ -51,6 +52,7 @@ class CarController:
 
         self._init_gpio()
         self._initialized = True
+        atexit.register(self.cleanup)
 
     def _init_gpio(self):
         """初始化GPIO"""
@@ -77,8 +79,8 @@ class CarController:
 
     def set_speed(self, speed: int):
         """设置速度 (0-100)"""
-        self.current_speed = max(0, min(100, speed))
         with self._motor_lock:
+            self.current_speed = max(0, min(100, speed))
             self.pwm_ena.ChangeDutyCycle(self.current_speed)
             self.pwm_enb.ChangeDutyCycle(self.current_speed)
 
@@ -166,6 +168,7 @@ class CarController:
 
             # 等待ECHO变高
             timeout = time.time()
+            t1 = time.time()
             while not GPIO.input(ECHO_PIN):
                 t1 = time.time()
                 if t1 - timeout > 0.1:
