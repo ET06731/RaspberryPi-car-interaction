@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能小车控制台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 智能小车控制台</h1>
+            <div class="status-bar">
+                <span class="status-indicator" id="connectionStatus">● 已连接</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- 传感器数据显示 -->
+            <section class="sensor-panel">
+                <h2>传感器数据</h2>
+                <div class="sensor-grid">
+                    <div class="sensor-item">
+                        <label>超声波距离</label>
+                        <span id="distanceValue" class="value">--</span>
+                        <span class="unit">cm</span>
+                    </div>
+                    <div class="sensor-item">
+                        <label>当前速度</label>
+                        <span id="speedValue" class="value">80</span>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 速度控制 -->
+            <section class="control-panel">
+                <h2>速度控制</h2>
+                <div class="speed-control">
+                    <input type="range" id="speedSlider" min="0" max="100" value="80">
+                    <div class="speed-labels">
+                        <span>慢</span>
+                        <span id="speedDisplay">80%</span>
+                        <span>快</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 方向控制 -->
+            <section class="control-panel">
+                <h2>方向控制</h2>
+                <div class="direction-pad">
+                    <div class="d-pad-row">
+                        <button class="btn-dir" data-direction="spin_left" title="原地左转">
+                            ↺
+                        </button>
+                        <button class="btn-dir btn-primary" data-direction="forward" title="前进">
+                            ▲
+                        </button>
+                        <button class="btn-dir" data-direction="spin_right" title="原地右转">
+                            ↻
+                        </button>
+                    </div>
+                    <div class="d-pad-row">
+                        <button class="btn-dir" data-direction="left" title="左转">
+                            ◀
+                        </button>
+                        <button class="btn-dir btn-stop" data-direction="stop" title="停止">
+                            ■
+                        </button>
+                        <button class="btn-dir" data-direction="right" title="右转">
+                            ▶
+                        </button>
+                    </div>
+                    <div class="d-pad-row">
+                        <button class="btn-dir" data-direction="backward" title="后退">
+                            ▼
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 键盘快捷键说明 -->
+            <section class="help-panel">
+                <h2>键盘快捷键</h2>
+                <div class="shortcuts">
+                    <div class="shortcut"><kbd>W</kbd> / <kbd>↑</kbd> 前进</div>
+                    <div class="shortcut"><kbd>S</kbd> / <kbd>↑</kbd> 后退</div>
+                    <div class="shortcut"><kbd>A</kbd> / <kbd>←</kbd> 左转</div>
+                    <div class="shortcut"><kbd>D</kbd> / <kbd>→</kbd> 右转</div>
+                    <div class="shortcut"><kbd>Q</kbd> 原地左转</div>
+                    <div class="shortcut"><kbd>E</kbd> 原地右转</div>
+                    <div class="shortcut"><kbd>Space</kbd> 停止</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>智能小车控制系统 v1.0 | 端口: 5000</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
