@@ -54,6 +54,8 @@ def get_status():
 def move():
     """控制小车移动"""
     data = request.get_json()
+    if data is None:
+        return jsonify({"status": "error", "message": "Invalid JSON body"}), 400
     direction = data.get("direction", "stop")
 
     actions = {
@@ -77,10 +79,16 @@ def move():
 def set_speed():
     """设置速度"""
     data = request.get_json()
+    if data is None:
+        return jsonify({"status": "error", "message": "Invalid JSON body"}), 400
     speed = data.get("speed", 80)
 
     try:
         speed = int(speed)
+        if speed < 0 or speed > 100:
+            return jsonify(
+                {"status": "error", "message": "Speed must be between 0 and 100"}
+            ), 400
         car.set_speed(speed)
         return jsonify({"status": "success", "speed": speed})
     except (ValueError, TypeError):
