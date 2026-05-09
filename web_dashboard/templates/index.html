@@ -11,6 +11,7 @@
         <header>
             <h1>🚗 智能小车控制台</h1>
             <div class="status-bar">
+                <a href="/monitor" style="color: white; margin-right: 15px;">🌡️ 系统监控</a>
                 <span class="status-indicator" id="connectionStatus">● 已连接</span>
             </div>
         </header>
@@ -80,6 +81,94 @@
                 </div>
             </section>
 
+            <!-- 蜂鸣器控制 -->
+            <section class="control-panel">
+                <h2>蜂鸣器</h2>
+                <div class="buzzer-buttons compact">
+                    <button class="btn-action btn-sm" onclick="window.carController.playBuzzer('short')">短</button>
+                    <button class="btn-action btn-sm" onclick="window.carController.playBuzzer('double')">两声</button>
+                    <button class="btn-action btn-sm" onclick="window.carController.playBuzzer('long')">长</button>
+                </div>
+            </section>
+
+            <!-- 风扇控制 -->
+            <section class="control-panel">
+                <h2>风扇控制</h2>
+                <div class="fan-buttons">
+                    <button class="btn-action btn-on" onclick="window.carController.controlFan('on')">开启</button>
+                    <button class="btn-action btn-off" onclick="window.carController.controlFan('off')">关闭</button>
+                </div>
+            </section>
+
+            <!-- 舵机控制 -->
+            <section class="control-panel">
+                <h2>云台舵机</h2>
+                <div class="servo-control">
+                    <div class="servo-row">
+                        <label>上下:</label>
+                        <input type="range" id="servoUpDown" min="0" max="180" value="90" onchange="window.carController.setServo('up_down', this.value)">
+                        <span id="servoUpDownVal">90°</span>
+                    </div>
+                    <div class="servo-row">
+                        <label>左右:</label>
+                        <input type="range" id="servoLeftRight" min="0" max="180" value="90" onchange="window.carController.setServo('left_right', this.value)">
+                        <span id="servoLeftRightVal">90°</span>
+                    </div>
+                    <button class="btn-action" onclick="window.carController.setServo('center', 90)">回中</button>
+                </div>
+            </section>
+
+            <!-- RGB LED 控制 -->
+            <section class="control-panel">
+                <h2>RGB 彩灯</h2>
+                <div class="rgb-control">
+                    <div class="rgb-presets">
+                        <button class="btn-rgb" style="background:#ff0000" onclick="window.carController.setRgbPreset('red')"></button>
+                        <button class="btn-rgb" style="background:#00ff00" onclick="window.carController.setRgbPreset('green')"></button>
+                        <button class="btn-rgb" style="background:#0000ff" onclick="window.carController.setRgbPreset('blue')"></button>
+                        <button class="btn-rgb" style="background:#ffff00" onclick="window.carController.setRgbPreset('yellow')"></button>
+                        <button class="btn-rgb" style="background:#00ffff" onclick="window.carController.setRgbPreset('cyan')"></button>
+                        <button class="btn-rgb" style="background:#ff00ff" onclick="window.carController.setRgbPreset('magenta')"></button>
+                        <button class="btn-rgb" style="background:#ff8800" onclick="window.carController.setRgbPreset('orange')"></button>
+                        <button class="btn-rgb" style="background:#ff69b4" onclick="window.carController.setRgbPreset('pink')"></button>
+                    </div>
+                    <div class="rgb-custom">
+                        <div>
+                            <label>R</label>
+                            <input type="range" id="rgbRed" min="0" max="255" value="0" onchange="window.carController.setRgbColor()">
+                        </div>
+                        <div>
+                            <label>G</label>
+                            <input type="range" id="rgbGreen" min="0" max="255" value="0" onchange="window.carController.setRgbColor()">
+                        </div>
+                        <div>
+                            <label>B</label>
+                            <input type="range" id="rgbBlue" min="0" max="255" value="0" onchange="window.carController.setRgbColor()">
+                        </div>
+                    </div>
+                    <button class="btn-action btn-off" onclick="window.carController.setRgbPreset('off')">关闭</button>
+                </div>
+            </section>
+
+            <!-- 摄像头控制 -->
+            <section class="control-panel">
+                <h2>摄像头预览</h2>
+                <div class="camera-buttons">
+                    <button class="btn-action btn-start" id="cameraStartBtn" onclick="window.carController.controlCamera('start')">开启</button>
+                    <button class="btn-action btn-stop" id="cameraStopBtn" onclick="window.carController.controlCamera('stop')">关闭</button>
+                </div>
+            </section>
+
+            <!-- 手势互动程序控制 -->
+            <section class="control-panel">
+                <h2>手势互动程序</h2>
+                <div class="gesture-buttons">
+                    <button class="btn-action btn-start" id="gestureStartBtn" onclick="window.carController.controlGesture('start')">启动</button>
+                    <button class="btn-action btn-stop" id="gestureStopBtn" onclick="window.carController.controlGesture('stop')">停止</button>
+                    <span id="gestureStatus" class="status-text">未运行</span>
+                </div>
+            </section>
+
             <!-- 键盘快捷键说明 -->
             <section class="help-panel">
                 <h2>键盘快捷键</h2>
@@ -98,6 +187,12 @@
         <footer>
             <p>智能小车控制系统 v1.0 | 端口: 5000</p>
         </footer>
+    </div>
+
+    <!-- 摄像头预览浮窗 -->
+    <div id="cameraPopup" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: none;">
+        <img id="cameraVideo" style="width: 320px; height: 240px; border: 3px solid #3498db; border-radius: 8px; background: #000; object-fit: cover;">
+        <button onclick="window.carController.controlCamera('stop')" style="position: absolute; top: -10px; right: -10px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">×</button>
     </div>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

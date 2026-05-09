@@ -69,17 +69,17 @@ header h1 {
 section {
     background: var(--card-bg);
     border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 15px;
+    margin-bottom: 15px;
     box-shadow: var(--shadow);
 }
 
 section h2 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
+    font-size: 1rem;
+    margin-bottom: 10px;
     color: var(--primary-color);
     border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 8px;
+    padding-bottom: 5px;
 }
 
 /* ===== 传感器面板 ===== */
@@ -286,3 +286,198 @@ footer {
 .updating {
     animation: pulse 0.5s ease;
 }
+
+/* ===== 蜂鸣器和手势控制按钮 ===== */
+.buzzer-buttons,
+.gesture-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.buzzer-buttons .btn-action {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    min-width: auto;
+}
+
+.btn-action {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    color: white;
+    font-weight: bold;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-action:active {
+    transform: translateY(0);
+}
+
+.btn-action.btn-on {
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+}
+
+.btn-action.btn-off {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+}
+
+.btn-action.btn-start {
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+    min-width: 100px;
+}
+
+.btn-action.btn-stop {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    min-width: 100px;
+}
+
+.status-text {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.status-text.running {
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.2);
+}
+
+/* ===== 舵机控制 ===== */
+.servo-control {
+    padding: 10px 0;
+}
+
+.servo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.servo-row label {
+    width: 40px;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.servo-row input[type="range"] {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.servo-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--secondary-color);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.servo-row span {
+    width: 45px;
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+/* ===== RGB LED 控制 ===== */
+.rgb-control {
+    padding: 10px 0;
+}
+
+.rgb-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.btn-rgb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.btn-rgb:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.rgb-custom {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 20px 0;
+}
+
+.rgb-custom > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.rgb-custom label {
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.rgb-custom > div:nth-child(1) label {
+    color: #ff6b6b;
+}
+
+.rgb-custom > div:nth-child(2) label {
+    color: #51cf66;
+}
+
+.rgb-custom > div:nth-child(3) label {
+    color: #339af0;
+}
+
+.rgb-custom input[type="range"] {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 8px;
+    height: 100px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.rgb-custom input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+

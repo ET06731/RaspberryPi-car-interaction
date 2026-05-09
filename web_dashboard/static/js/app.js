@@ -358,6 +358,193 @@ class CarController {
     }
     
     /**
+     * Control buzzer - play different patterns
+     */
+    async playBuzzer(pattern) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/buzzer`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pattern: pattern })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Buzzer error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Control fan
+     */
+    async controlFan(action) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/fan`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Fan error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Control camera
+     */
+    async controlCamera(action) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/camera`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            });
+            const result = await response.json();
+            
+            if (action === 'start' && result.status === 'success') {
+                // 延迟启动视频流
+                setTimeout(() => {
+                    this.startVideoStream();
+                }, 1000);
+            } else if (action === 'stop') {
+                this.stopVideoStream();
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Camera error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Start video stream
+     */
+    startVideoStream() {
+        const popup = document.getElementById('cameraPopup');
+        const videoEl = document.getElementById('cameraVideo');
+        if (videoEl) {
+            const videoUrl = window.location.protocol + '//' + window.location.host + '/video_feed';
+            console.log('[Camera] Loading video from:', videoUrl);
+            videoEl.src = videoUrl;
+            videoEl.style.display = 'block';
+            
+            videoEl.onload = () => {
+                console.log('[Camera] Video loaded successfully');
+            };
+            videoEl.onerror = (e) => {
+                console.error('[Camera] Video load error:', e);
+            };
+        }
+        if (popup) {
+            popup.style.display = 'block';
+        }
+    }
+    
+    /**
+     * Stop video stream
+     */
+    stopVideoStream() {
+        const popup = document.getElementById('cameraPopup');
+        const videoEl = document.getElementById('cameraVideo');
+        if (videoEl) {
+            videoEl.src = '';
+            videoEl.style.display = 'none';
+        }
+        if (popup) {
+            popup.style.display = 'none';
+        }
+    }
+    
+    /**
+     * Control gesture interaction program
+     */
+    async controlGesture(action) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/gesture`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Gesture control error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Control servo (pan/tilt)
+     */
+    async setServo(type, angle) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/servo`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: type, angle: parseInt(angle) })
+            });
+            const result = await response.json();
+            
+            // Update display
+            if (type === 'up_down') {
+                document.getElementById('servoUpDownVal').textContent = angle + '°';
+            } else if (type === 'left_right') {
+                document.getElementById('servoLeftRightVal').textContent = angle + '°';
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('Servo control error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Set RGB LED preset color
+     */
+    async setRgbPreset(color) {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/rgb`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'preset', color: color })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('RGB control error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Set RGB LED custom color
+     */
+    async setRgbColor() {
+        try {
+            const red = document.getElementById('rgbRed').value;
+            const green = document.getElementById('rgbGreen').value;
+            const blue = document.getElementById('rgbBlue').value;
+            
+            const response = await fetch(`${this.apiBaseUrl}/rgb`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    action: 'color', 
+                    red: parseInt(red), 
+                    green: parseInt(green), 
+                    blue: parseInt(blue) 
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('RGB control error:', error);
+            return null;
+        }
+    }
+    
+    /**
      * Cleanup when controller is destroyed
      */
     destroy() {
